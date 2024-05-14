@@ -1,101 +1,60 @@
-
-# RabbitMQ
-Python ile publisher olarak mesaj gönderme ve gelen mesajı consumer olarak alma işlemleri.
+# RabbitMQ 
 
 ## RabbitMQ Kurulumu
 
-RabbitMQ, Erlang programlama dilinde geliştirilmiştir. Bu nedenle RabbitMQ kurulurken ilk adım olarak Erlang programlama dili için kurulum yapılır. Ardından RabbitMQ kurulur.
-
-İlk olarak https://www.erlang.org/downloads adresinden indirilen exe dosyası ile Erlang kurulumu yapılır.
-
-Erlang kurulumu tamamlandıktan sonra https://www.rabbitmq.com/docs/download adresinden bilgisayara uygun olarak RabbitMQ kurulumu yapılır.
+RabbitMQ Erlang programlama dilinde geliştirilmiştir. Bu nedenle RabbitMQ kurulurken ilk adım olarak Erlang programlama dili için kurulum yapılır. Ardından RabbitMQ kurulur.
+ 	İlk olarak https://www.erlang.org/downloads adresinden indirilen exe dosyası ile erlang kurulumu yapılır.
+ 	Erlang kurulumu tamamlandıktan sonra https://www.rabbitmq.com/docs/download adresinden bilgisayara uygun olarak RabbitMQ kurulumu yapılır.
 
 ## RabbitMQ Konfigürasyon
-Konfigürasyon işlemi için Windows tuşuna basıp arama kısmına “RabbitMQ Command Prompt” yazarak arama yapılır.
 
-RabbitMQ Command Prompt’a tıklanır ve aşağıdaki ekran elde edilir:
+Konfigürasyon işlemi için Windows tuşuna basıp arama kısmına “RabbitMQ Command Prompt” yazarak arama yapılır. 
 
+ ![RabbitMQ Konfigürasyon-1](images/1.png)
+
+RabbitMQ Command Prompt’a tıklanır. Aşağıdaki ekran elde edilir:
+
+![RabbitMQ Konfigürasyon-2](images/2.png)
 
 RabbitMQ kurulumlarından sonra RabbitMQ Plugin-Servisini aktif etmek için komut satırı dizesine alttaki komutu yazalım ve Servis-Plugin’i aktifleştirilmiş olur.
-
-sh
-Kodu kopyala
 rabbitmq-plugins enable rabbitmq_management
+ 
+![RabbitMQ Konfigürasyon-3](images/3.png)
 
-Kurulum ve konfigürasyon işlemlerini tamamladıktan sonra RabbitMQ için browser’a 15672 portundan erişilebilir.
-
+Kurulum ve konfigürasyon işlemlerini tamamlandıktan sonra RabbitMQ için browser’a 15672 portundan erişilebilir.
 http://localhost:15672
 
+ ![RabbitMQ login ekranı](images/4.png)
 
 Karşımıza local makinemize kurmuş olduğumuz RabbitMQ login ekranı gelecektir. RabbitMQ kurulumunda varsayılan olarak kullanıcı adı ve şifre tanımlanmış olarak gelir.
-
-yaml
-Kodu kopyala
 UserName: guest
 Password : guest
-Python ile İlk Kullanım Örneği
+
+## Python ile İlk Kullanım Örneği
+
 Python ile publisher olarak mesaj göndermek ve gelen mesajı consumer olarak almak için gereken kodlar ve adım adım yapılması gerekenler aşağıda görseller ile açıklanmıştır.
+ 	İlk olarak producer.py ve consumer.py olarak adlandırılan  publisher ve consumer  için python kodu yazılır. 
 
-İlk olarak producer.py ve consumer.py olarak adlandırılan publisher ve consumer için python kodu yazılır.
+ ![Producer olarak mesaj yazılmasını sağlayan Python kodu](images/5.png) 
 
-Producer olarak mesaj yazılmasını sağlayan Python kodu (producer.py)
-python
-Kodu kopyala
-import pika
+ ![Consumer olarak mesajın alındığı Python kodu](images/6.png) 
 
-# Bağlantıyı kur
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-channel = connection.channel()
+ 	http://localhost:15672 adresine gidilerek RabbitMQ Management’a giriş yapılır. Varsayılan olarak kullanıcı adı ve şifre = guest şeklindedir.
 
-# Kuyruğu oluştur
-channel.queue_declare(queue='hello')
+   ![ RabbitMQ login](images/7.png) 
 
-# Mesajı gönder
-channel.basic_publish(exchange='',
-                      routing_key='hello',
-                      body='Hello World!')
-print(" [x] Sent 'Hello World!'")
+ 	Python kodları yazıldıktan  sonra kullanılan IDE’ye ait terminal ya da bilgisayarın komut istemi kullanılarak producer.py içerisine yazılan producer kodu çalıştırılır.
+  
+  ![ producer.py dosyasının komut istemi ile çalıştırılması](images/8.png)  
 
-# Bağlantıyı kapat
-connection.close()
-Consumer olarak mesajın alındığı Python kodu (consumer.py)
-python
-Kodu kopyala
-import pika
+ 	Producer.py kodu çalıştırıldıtan sonra RabbitMQ Management’te elde edilen çıktı aşağıdaki gibidir.
+ 
+  ![ producer.py çalıştırıldıktan sonra RabbitMQ Management](images/9.png)
+  
+ 	Bu işlemlerin ardından Consumer kodu çalıştırılır. 
 
-# Bağlantıyı kur
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-channel = connection.channel()
+ ![ Komut istemi üzerinde consumer kodunun çalıştırılması](images/10.png)
+Şekil 
+ 	Consume işleminden sonra RabbitMQ Management görünümü aşağıdaki gibidir.
 
-# Kuyruğu oluştur
-channel.queue_declare(queue='hello')
-
-def callback(ch, method, properties, body):
-    print(" [x] Received %r" % body)
-
-# Mesajları al
-channel.basic_consume(queue='hello',
-                      on_message_callback=callback,
-                      auto_ack=True)
-
-print(' [*] Waiting for messages. To exit press CTRL+C')
-channel.start_consuming()
-http://localhost:15672 adresine gidilerek RabbitMQ Management’a giriş yapılır. Varsayılan olarak kullanıcı adı ve şifre guest şeklindedir.
-
-
-Python kodları yazıldıktan sonra kullanılan IDE’ye ait terminal ya da bilgisayarın komut istemi kullanılarak producer.py içerisine yazılan producer kodu çalıştırılır.
-
-sh
-Kodu kopyala
-python producer.py
-
-Producer.py kodu çalıştırıldıktan sonra RabbitMQ Management’te elde edilen çıktı aşağıdaki gibidir:
-
-
-Bu işlemlerin ardından consumer.py kodu çalıştırılır.
-
-sh
-Kodu kopyala
-python consumer.py
-
-Consume işleminden sonra RabbitMQ Management görünümü aşağıdaki gibidir:
+ ![ consumer.py çalıştırıldıktan sonra RabbitMQ Management](images/11.png)
