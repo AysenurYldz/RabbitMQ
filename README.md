@@ -54,7 +54,7 @@ Python ile publisher olarak mesaj göndermek ve gelen mesajı consumer olarak al
  	Bu işlemlerin ardından Consumer kodu çalıştırılır. 
 
  ![ Komut istemi üzerinde consumer kodunun çalıştırılması](images/10.png)
-Şekil 
+
  	Consume işleminden sonra RabbitMQ Management görünümü aşağıdaki gibidir.
 
  ![ consumer.py çalıştırıldıktan sonra RabbitMQ Management](images/11.png)
